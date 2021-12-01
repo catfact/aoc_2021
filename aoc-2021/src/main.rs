@@ -6,7 +6,7 @@ fn parse_integer_list(filename:&str) -> Vec<i32> {
     return z.map(|r| r.unwrap()).collect();
 }
 
-// find count of values that are greater than previous
+// count of increasing values
 fn test_1() -> u32 { 
     let filename = "input/1.txt";
     let z = parse_integer_list(filename);
@@ -20,7 +20,7 @@ fn test_1() -> u32 {
     return n;
 }
 
-// count number of moving sums which are increasing with windowsize=3
+// count of increasing sums over sliding window
 fn test_2() -> u32 { 
     let filename = "input/1.txt";
     let z = parse_integer_list(filename);
