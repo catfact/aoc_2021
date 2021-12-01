@@ -10,13 +10,7 @@ fn parse_integer_list(filename:&str) -> Vec<i32> {
 fn test_1() -> u32 { 
     let filename = "input/1.txt";
     let z = parse_integer_list(filename);
-
-    let mut n:u32 = 0;
-    for pair in z.windows(2) { 
-        if pair[1] > pair[0] { 
-            n += 1;
-        }
-    }    
+    let n:u32 = z.windows(2).map(|w| if w[1]>w[0] {1} else {0}).sum();
     return n;
 }
 
@@ -25,13 +19,7 @@ fn test_2() -> u32 {
     let filename = "input/1.txt";
     let z = parse_integer_list(filename);
     let sums:Vec<i32> = z.windows(3).map(|w| w.iter().sum()).collect();
-    
-    let mut n:u32 = 0;
-    for pair in sums.windows(2) { 
-        if pair[1] > pair[0] { 
-            n += 1;
-        }
-    }    
+    let n:u32 = sums.windows(2).map(|w| if w[1]>w[0] {1} else {0}).sum();
     return n;
 }
 
