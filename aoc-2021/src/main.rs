@@ -6,11 +6,28 @@ fn parse_integer_list(filename:&str) -> Vec<i32> {
     return z.map(|r| r.unwrap()).collect();
 }
 
-fn test_1() -> i32 { 
+// find count of values that are greater than previous
+fn test_1() -> u32 { 
     let filename = "input/1.txt";
     let z = parse_integer_list(filename);
-    let mut n:i32 = 0;
+
+    let mut n:u32 = 0;
     for pair in z.windows(2) { 
+        if pair[1] > pair[0] { 
+            n += 1;
+        }
+    }    
+    return n;
+}
+
+// count number of moving sums which are increasing with windowsize=3
+fn test_2() -> u32 { 
+    let filename = "input/1.txt";
+    let z = parse_integer_list(filename);
+    let sums:Vec<i32> = z.windows(3).map(|w| w.iter().sum()).collect();
+    
+    let mut n:u32 = 0;
+    for pair in sums.windows(2) { 
         if pair[1] > pair[0] { 
             n += 1;
         }
@@ -20,4 +37,5 @@ fn test_1() -> i32 {
 
 fn main() {
     println!("test 1 result: {}", test_1());
+    println!("test 2 result: {}", test_2());
 }
