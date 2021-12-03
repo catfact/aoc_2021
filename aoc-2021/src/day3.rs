@@ -11,25 +11,30 @@ fn parse_binary_list(filename: &str) -> Vec<Vec<bool>> {
     return res;
 }
 
-fn count_ones(binlist: &Vec<Vec<bool>>) -> Vec<usize> {
+// return vector with count of set bits for each position
+fn count_ones(readings: &Vec<Vec<bool>>) -> Vec<usize> {
     let mut ones: Vec<usize> = vec![0; NBITS];
-    for bin in binlist {
-        for (b, x) in bin.iter().enumerate() {
+    for list in readings {
+        for (b, x) in list.iter().enumerate() {
             if *x {
-                ones[b] = ones[b] + 1
+                ones[b] += 1;
             }
         }
     }
     return ones;
 }
 
+// count readings with given bit set
+fn count_ones_pos(readings: &Vec<Vec<bool>>, pos: usize) -> usize {
+    return readings.iter().filter(|list| list[pos]).count();
+}
+
 pub fn test1() -> u32 {
     let filename = "input/3.txt";
     let binlist = parse_binary_list(filename);
     let n = binlist.len();
-    let n_2 = n / 2;
     let mut ones = count_ones(&binlist);
-
+    let mut zeros: Vec<usize> = ones.iter().map(|x| n - x).collect();
     // integer constructed from most common bits:
     let mut gamma: u32 = 0;
     // and from least common bits:
@@ -37,80 +42,61 @@ pub fn test1() -> u32 {
 
     // put LSB first:
     ones.reverse();
+    zeros.reverse();
     for b in 0..NBITS {
-        if ones[b] > n_2 {
-            gamma = gamma | (1 << b);
+        if ones[b] > zeros[b] {
+            gamma |= 1 << b;
         } else {
-            epsilon = epsilon | (1 << b);
+            epsilon |= 1 << b;
         }
     }
-
     return gamma * epsilon;
 }
+
 // return a new vector of bitvectors,
 // containing only those bitvectors matching given pos/val
-fn filter_bit(binlist: &Vec<Vec<bool>>, pos: usize, val: bool) -> Vec<Vec<bool>> {
-    return binlist
-        .iter()
-        .filter(|bin| bin[pos] == val)
-        .cloned()
-        .collect();
-}
-
-fn apply_bit_criteria(binlist: &Vec<Vec<bool>>, target: &Vec<bool>) -> u32 {
-    let mut remain = binlist.clone();
-    let mut numremain = binlist.len();
+fn apply_bit_criteria(candidates: &Vec<Vec<bool>>, invert: bool) -> u32 {
+    let mut remaining = candidates.clone();
     let mut pos: usize = 0;
-
-    while numremain > 1 {
-        remain = filter_bit(&remain, pos, target[pos]);
-        // println!("remaining bit list: {:?}", remain.iter().map(|xx|
-        //     xx.iter().map(|x| if *x {1} else {0}))).collect();
-        numremain = remain.len();
-        pos = pos + 1;
-    }
-
-    println!("final candidate: {:?}", remain[0]);
-    let mut y = remain[0].clone();
-    y.reverse();
-    let mut z = 0;
-    for (bit, val) in y.iter().enumerate() {
-        if *val {
-            z = z | (1 << bit);
+    let mut target;
+    while remaining.len() > 1 {
+        let ones = count_ones_pos(&remaining, pos);
+        let zeros = remaining.len() - ones;
+        if ones == zeros {
+            target = true;
+        } else {
+            target = ones > zeros;
         }
+        target ^= invert;
+        remaining = remaining
+            .iter()
+            .filter(|bin| bin[pos] == target)
+            .cloned()
+            .collect();
+        println!("checked bit pos {}; remaining = {}", pos, remaining.len());
+        pos += 1;
     }
-    return z;
-}
 
-fn compute_oxy(binlist: &Vec<Vec<bool>>, ones: &Vec<usize>) -> u32 {
-    let n = binlist.len();
-    let n_2 = n / 2;
-    let target: Vec<bool> = ones
-        .iter()
-        .map(|count| if count == &n_2 { true } else { count > &n_2 })
-        .collect();
-    println!("target: {:?}", target);
-    return apply_bit_criteria(binlist, &target);
-}
-
-fn compute_co2(binlist: &Vec<Vec<bool>>, ones: &Vec<usize>) -> u32 {
-    let n = binlist.len();
-    let n_2 = n / 2;
-    let target: Vec<bool> = ones
-        .iter()
-        .map(|count| if count == &n_2 { false } else { count < &n_2 })
-        .collect();
-    println!("target: {:?}", target);
-    return apply_bit_criteria(binlist, &target);
+    println!(
+        "final:  {:?}",
+        remaining[0]
+            .iter()
+            .map(|v| if *v { 1 } else { 0 })
+            .collect::<Vec<i32>>()
+    );
+    let mut finalbits = remaining[0].clone();
+    finalbits.reverse();
+    return (0..NBITS).fold(0, |acc, b| acc + if finalbits[b] { 1 << b } else { 0 });
 }
 
 pub fn test2() -> u32 {
     let filename = "input/3.txt";
-    let binlist = parse_binary_list(filename);
-    let ones = count_ones(&binlist);
+    let readings = parse_binary_list(filename);
 
-    let oxy = compute_oxy(&binlist, &ones);
-    let co2 = compute_co2(&binlist, &ones);
+    let oxy = apply_bit_criteria(&readings, true);
+    let co2 = apply_bit_criteria(&readings, false);
 
     return oxy * co2;
 }
+
+// wrong: 2503197
