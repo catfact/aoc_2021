@@ -10,4 +10,5 @@ fn main() {
     println!("day 2, test 2 result: {}", day2::test2());
 
     println!("day 3, test 1 result: {}", day3::test1());
+    println!("day 3, test 2 result: {}", day3::test2());
 }
