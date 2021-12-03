@@ -30,7 +30,7 @@ pub fn test1() -> u32 {
         }
         n = n + 1;
     }
-    println!("n = {}", n);
+    // println!("n = {}", n);
 
     let n_2 = n / 2;
 
@@ -43,13 +43,9 @@ pub fn test1() -> u32 {
             epsilon = epsilon | (1 << b);
         }
     }
-
-    for b in 0..bits { 
-        print!("{} ", ones[b]);
-    }
-    println!("");
     // for b in 0..bits { 
     //     print!("{} ", ones[b]);
     // }
+    // println!("");
     return gamma * epsilon;
 }
