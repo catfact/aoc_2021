@@ -15,24 +15,41 @@ pub fn test1() -> u32 {
     let binlist = parse_binary_list(filename);
     let bits = 12;
 
-    let mut numpos: Vec<u32> = vec![0; bits];
-    let mut res: u32 = 0;
+    // count of '1's in the data for each bit position:
+    let mut ones: Vec<u32> = vec![0; bits];
+
+    let mut gamma: u32 = 0;
+    let mut epsilon: u32 = 0;
 
     let mut n = 0;
     for bin in binlist {
         for (b, x) in bin.iter().enumerate() {
             if *x {
-                numpos[b] = numpos[b] + 1
+                ones[b] = ones[b] + 1
             }
         }
         n = n + 1;
     }
+    println!("n = {}", n);
 
     let n_2 = n / 2;
+
+    // reverse the count vector to get LSB first
+    ones.reverse();
     for b in 0..bits {
-        if numpos[b] > n_2 {
-            res = res | (1 << b);
+        if ones[b] > n_2 {
+            gamma = gamma | (1 << b);
+        } else {
+            epsilon = epsilon | (1 << b);
         }
     }
-    return res;
+
+    for b in 0..bits { 
+        print!("{} ", ones[b]);
+    }
+    println!("");
+    // for b in 0..bits { 
+    //     print!("{} ", ones[b]);
+    // }
+    return gamma * epsilon;
 }
