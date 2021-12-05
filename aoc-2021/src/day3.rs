@@ -98,5 +98,3 @@ pub fn test2() -> u32 {
 
     return oxy * co2;
 }
-
-// wrong: 2503197
