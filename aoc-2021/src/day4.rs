@@ -21,26 +21,28 @@ impl BoardState {
     }
 
     fn test_row(&self, i: usize) -> bool {
-        for j in 0..4 {
-            if !self.hits[i][j] {
+        for j in 0..5 {
+            if !(self.hits[i][j]) {
                 return false;
             }
         }
+        println!("hit row {}", i);
         return true;
     }
 
     fn test_col(&self, j: usize) -> bool {
-        for i in 0..4 {
-            if !self.hits[i][j] {
+        for i in 0..5 {
+            if !(self.hits[i][j]) {
                 return false;
             }
         }
+        println!("hit col {}", j);
         return true;
     }
 
     fn update(&mut self, val: u8) -> bool {
         self.check_number(val);
-        for i in 0..4 {
+        for i in 0..5 {
             if self.test_row(i) {
                 return true;
             }
@@ -49,6 +51,18 @@ impl BoardState {
             }
         }
         return false;
+    }
+
+    fn calc_score(&mut self, num: u8) -> u32 { 
+        let mut sum: u32 = 0;
+        for i in 0..5 { 
+            for j in 0..5 { 
+                if !(self.hits[i][j]) {
+                    sum += self.values[i][j] as u32;
+                }
+            } 
+        }
+        return sum * (num as u32);
     }
 }
 
@@ -91,8 +105,10 @@ fn parse_input() -> (Vec<u8>, Vec<BoardValues>) {
     return (nums, boards);
 }
 
-pub fn test1() -> usize {
+pub fn test1() -> u32 {
     let mut winner: Option<usize> = None;
+    let mut score: Option<u32> = None;
+
     let (nums, values) = parse_input();
     let mut boards: Vec<BoardState> = values
         .iter()
@@ -104,11 +120,13 @@ pub fn test1() -> usize {
 
     let nboards = boards.len();
     let mut done = false;
+
     for num in nums {
         if done { break; }
         for i in 0..nboards {
             if boards[i].update(num) {
                 winner = Some(i);
+                score = Some(boards[i].calc_score(num));
                 done = true;
                 break;
             }
@@ -116,6 +134,7 @@ pub fn test1() -> usize {
     }
     if winner.is_some() {
         let w = winner.unwrap();
+
         println!("winning board ({}): \n", w);
         println!("{:?}", boards[w]);
     }
@@ -125,5 +144,5 @@ pub fn test1() -> usize {
 
     //... do stuff
 
-    return 0;
+    return score.unwrap_or(0);
 }

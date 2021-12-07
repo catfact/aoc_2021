@@ -73,17 +73,17 @@ fn apply_bit_criteria(candidates: &Vec<Vec<bool>>, invert: bool) -> u32 {
             .filter(|bin| bin[pos] == target)
             .cloned()
             .collect();
-        println!("checked bit pos {}; remaining = {}", pos, remaining.len());
+        // println!("checked bit pos {}; remaining = {}", pos, remaining.len());
         pos += 1;
+        
     }
-
-    println!(
-        "final:  {:?}",
-        remaining[0]
-            .iter()
-            .map(|v| if *v { 1 } else { 0 })
-            .collect::<Vec<i32>>()
-    );
+    // println!(
+    //     "final:  {:?}",
+    //     remaining[0]
+    //         .iter()
+    //         .map(|v| if *v { 1 } else { 0 })
+    //         .collect::<Vec<i32>>()
+    // );
     let mut finalbits = remaining[0].clone();
     finalbits.reverse();
     return (0..NBITS).fold(0, |acc, b| acc + if finalbits[b] { 1 << b } else { 0 });
