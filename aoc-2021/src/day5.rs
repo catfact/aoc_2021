@@ -29,6 +29,7 @@ fn build_zmap(segments: &Vec<[[i32; 2]; 2]>) ->  HashMap<(i32,i32), i32> {
             for y in ay..(by+1) { 
                 let k = (x, y);
                 let z = zmap.get(&k).unwrap_or(&0) + 1;
+                println!("new z = {}", z);
                 zmap.insert(k, z);
             }
         } else { 
